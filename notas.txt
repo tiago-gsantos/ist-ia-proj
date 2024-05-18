@@ -1,0 +1,90 @@
+_________________________
+|    ___|   |   |___@   |
+|___|___|___|___|_______|
+|___|   |___    |   @   |
+|___|___|___|___|___|___|
+|___@   |    ___|    ___|
+|_______|___|___|___|___|
+
+(x, y) -> (cima, baixo, esq, dir)
+
+(0,0) -> (None, BE0, None, LV0)
+(0,1) -> (None, VE0, BE0, FE0)
+(0,2) -> (None, FB0, LV0, None)
+
+(1,0) -> (VD0, FE0, None, VE0)
+(1,1) -> (LV0, VB0, BE0, FB0)
+(1,2) -> (FE0, VB0, VE0, None)
+
+(2,0) -> (BE0, None, None, VB0)
+(2,1) -> (VE0, None, FE0, VB0)
+(2,2) -> (FB0, None, VB0, None)
+
+
+
+*L*
+(SEM POSIÇÕES FECHADAS)
+L no meio -> (LH, LV)
+
+(COM POSICOES FECHADAS)
+Se 1ºposição está a 1: (CIMA)
+	se tiver de existir correspondencia ('LV', 'VE', 'VB', 'BB', 'BE', 'BD', 'FB') -> (LV)
+	c.c. -> LH
+
+Se 2ºposição está a 1: (BAIXO)
+	se tiver de existir correspondencia ('LV', 'VD', 'VC', 'BC', 'BE', 'BD', 'FC') -> (LV)
+	c.c. -> (LH)
+
+Se 3ºposição está a 1: (ESQUERDA)
+	se tiver de existir correspondencia ('LH', 'VD', 'VB', 'BC', 'BB', 'BD', 'FD') -> (LH)
+	c.c. -> (LV)
+
+Se 4ºposição está a 1: (DIREITA)
+	se tiver de existir correspondencia ('LH', 'VE', 'VC', 'BC', 'BB', 'BE', 'FE') -> (LH)
+	c.c. -> (LV)
+
+
+*F*
+
+(COM POSIÇÕES FECHADAS)
+Se 1ºposição está a 1: (CIMA)
+	se tiver de existir correspondencia (LV, VE, VB, BB, BE, BD) -> (FC)
+	c.c. (LH1, VD1, VC1, BC1, FC1, FB1, FE1, FD1) -> (FB, FE, FD)
+
+Se 2ºposição está a 1: (BAIXO)
+	se tiver de existir correspondencia (LV, VD, VC, BC, BE, BD) -> (FB)
+	c.c. -> (FB, FE, FD)
+
+Se 3ºposição está a 1: (ESQUERDA)
+	se tiver de existir correspondencia (LH, VD, VB, BC, BB, BD) -> (FE)
+	c.c. -> (FC, FB, FD)
+
+Se 4ºposição está a 1: (DIREITA)
+	se tiver de existir correspondencia (LH, VE, VC, BC, BB, BE) -> (FD)
+	c.c. -> (FC, FB, FE)
+
+
+*B*
+(SEM POSICOES FECHADAS)
+B no meio -> (BC, BB, BE, BD)
+
+
+(COM POSICOES FECHADAS)
+Se 1ºposição está a 1: (CIMA)
+	se tiver de existir correspondencia (LV, VE, VB, BB, BE, BD, FB) -> (BC, BE, BD)
+	c.c. -> (BB)
+
+Se 2ºposição está a 1: (BAIXO)
+	se tiver de existir correspondencia (LV, VD, VC, BC, BE, BD, FC) -> (BB, BE, BD)
+	c.c. -> (BC)
+
+Se 3ºposição está a 1: (ESQUERDA)
+	se tiver de existir correspondencia (LH, VD, VB, BC, BB, BD, FD) -> (BC, BB, BE)
+	c.c. -> (BD)
+
+Se 4ºposição está a 1: (DIREITA)
+	se tiver de existir correspondencia (LH, VE, VC, BC, BB, BE, FE) -> (BD, BB, BD)
+	c.c. -> (BE)
+
+
+
