@@ -27,6 +27,22 @@ piece_rot = {
     'L': ['LV', 'LH']
 }
 
+adjacent_directions = {
+    'FC': [(-1, 0)],
+    'FB': [(1, 0)],
+    'FD': [(0, 1)],
+    'FE': [(0, -1)],
+    'VC': [(-1, 0), (0, -1)],
+    'VB': [(1, 0), (0, 1)],
+    'VD': [(0, 1), (-1, 0)],
+    'VE': [(0, -1), (1, 0)],
+    'BC': [(-1, 0), (0, -1), (0, 1)],
+    'BB': [(1, 0), (0, 1), (0, -1)],
+    'BD': [(0, 1), (-1, 0), (1, 0)],
+    'BE': [(0, -1), (1, 0), (-1, 0)],
+    'LH': [(0, 1), (0, -1)],    
+    'LV': [(1, 0), (-1, 0)],    
+}
 
 class PipeManiaState:
     state_id = 0
@@ -46,6 +62,7 @@ class Board:
     def __init__(self, board_array, dim):
         self.board_array = board_array
         self.dim = dim
+        self.is_valid = True
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -53,16 +70,42 @@ class Board:
             return None
         return self.board_array[row][col]
 
-
     def adjacent_positions(self, row: int, col: int):
         """Devolve os valores imediatamente acima, abaixo, à esquerda e 
         à direita respectivamente."""
-        adjacents = []
-        adjacents.append(self.get_value(row - 1, col))
-        adjacents.append(self.get_value(row + 1, col))
-        adjacents.append(self.get_value(row, col - 1))
-        adjacents.append(self.get_value(row, col + 1))
-        return adjacents
+        return [self.get_value(row - 1, col), self.get_value(row + 1, col),
+                self.get_value(row, col - 1), self.get_value(row, col + 1)]
+
+    def adjacent_connections(self, row: int, col: int):
+        directions = adjacent_directions[self.get_value(row, col)[:2]]
+        positions = []
+        for dir in directions:
+            pos = (row + dir[0], col + dir[1])
+            if (self.get_value(pos[0], pos[1]) != None):
+                positions.append(pos)
+        return positions
+        
+
+    def update_adjacent(self, adj_positions):
+        for pos in adj_positions:
+            r, c = pos
+            if(self.get_value(r, c) != None and self.get_value(r, c)[2] != '1'):
+                old_possibilities = len(self.possible_rotations[r][c])
+
+                new_rotations = self.calculate_possible_rotations(r, c)
+
+                new_possibilities = len(new_rotations)
+                
+                if(new_possibilities == 0):
+                    self.is_valid = False
+                    return self
+                
+                if(new_possibilities == 1 and old_possibilities != 1):
+                    self.remaining_pieces.remove((r, c))
+                    self.remaining_pieces.insert(0, (r, c))
+                
+                self.possible_rotations[r][c] = new_rotations
+                self.total_possibilities += (new_possibilities - old_possibilities)
 
 
     def rotate_piece(self, row: int, col: int, rot: str):
@@ -74,15 +117,8 @@ class Board:
 
         adj_positions = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
 
-        for pos in adj_positions:
-            r, c = pos
-            if(new_board.get_value(r, c) != None and new_board.get_value(r, c)[2] != '1'):
-                new_rotations = new_board.calculate_possible_rotations(r, c)
-                new_board.possible_rotations[r][c] = new_rotations
-                if(len(new_rotations) == 1):
-                    new_board.remaining_pieces.remove((r, c))
-                    new_board.remaining_pieces.insert(0, (r, c))
-
+        new_board.update_adjacent(adj_positions)
+        
         return new_board
 
 
@@ -109,7 +145,6 @@ class Board:
             elif(piece[0] == 'F'):
                 possible_rotations[2] = ''
                 possible_rotations[3] = ''
-
 
 
         if(adj_positions[1] in [None, 'LH1', 'VB1', 'VE1', 'BB1', 'FB1', 'FE1', 'FD1']):
@@ -185,29 +220,44 @@ class Board:
                 possible_rotations[0] = ''
                 possible_rotations[1] = ''
 
-        # Verificar quando 2 finais estão ligados
+        if(piece[0] == 'F'):
+            if(adj_positions[0] != None and adj_positions[0][0] == 'F'):
+                possible_rotations[0] = ''
+            if(adj_positions[1] != None and adj_positions[1][0] == 'F'):
+                possible_rotations[1] = ''
+            if(adj_positions[2] != None and adj_positions[2][0] == 'F'):
+                possible_rotations[2] = ''
+            if(adj_positions[3] != None and adj_positions[3][0] == 'F'):
+                possible_rotations[3] = ''
 
         return list(filter(None, possible_rotations))
-    
+
 
     def calculate_initial_state(self):
         self.possible_rotations = []
         self.remaining_pieces = []
+        self.total_possibilities = 0
 
         for row in range(self.dim):
-            row_possibilities = []
+            self.possible_rotations.append([])
             
             for col in range(self.dim):
                 
                 rotations = self.calculate_possible_rotations(row, col)
-                row_possibilities.extend([rotations])
+                num_possibilities = len(rotations)
                 
-                if(len(rotations) == 1):
-                    self.remaining_pieces.insert(0, (row, col))
+                if(num_possibilities == 0):
+                    self.is_valid = False
+                    return self
+                elif(num_possibilities == 1):
+                    self.board_array[row][col] = rotations[0] + '1'
+                    adj_positions = [(row-1, col), (row, col-1)]
+                    self.update_adjacent(adj_positions)
                 else:
                     self.remaining_pieces.append((row, col))
-
-            self.possible_rotations.extend([row_possibilities])
+                    
+                self.total_possibilities += num_possibilities
+                self.possible_rotations[row].append(rotations)
 
         return self
 
@@ -237,6 +287,20 @@ class Board:
             modified_line = [elem[:2] for elem in line]
             print('\t'.join(map(str, modified_line)))
 
+    def dfs(self):
+        stack = [(0,0)]
+        visited = set()
+
+        while stack:
+            piece = stack.pop()
+            if piece in visited: continue
+            visited.add(piece)
+            for adj in self.adjacent_connections(piece[0], piece[1]):
+                if(piece in self.adjacent_connections(adj[0], adj[1])):
+                    stack.append(adj)
+        
+        return len(visited)
+
 
 class PipeMania(Problem):
     def __init__(self, board: Board):
@@ -246,10 +310,13 @@ class PipeMania(Problem):
     def actions(self, state: PipeManiaState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
+        possible_actions = []
+
+        if(state.board.is_valid == False or len(state.board.remaining_pieces) == 0):
+            return possible_actions
+        
         row, col = state.board.remaining_pieces[0]
         rotations = state.board.possible_rotations[row][col]
-        
-        possible_actions = []
         
         for rot in rotations:
             possible_actions.extend([(row, col, rot)])
@@ -270,21 +337,20 @@ class PipeMania(Problem):
         """Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
-        #falta DFS
-        return len(state.board.remaining_pieces) == 0
+        
+        if(len(state.board.remaining_pieces) != 0):
+            return False
 
+        return state.board.dfs() == (state.board.dim * state.board.dim)
+    
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
-        pass
+        return node.state.board.total_possibilities
 
 
 if __name__ == "__main__":
-    # Ler o ficheiro do standard input,
     board = Board.parse_instance()
     pipeMania = PipeMania(board)
-    goal = depth_first_tree_search(pipeMania)
+    goal = greedy_search(pipeMania)
     goal.state.board.print_board()
-    # Usar uma técnica de procura para resolver a instância,
-    # Retirar a solução a partir do nó resultante,
-    # Imprimir para o standard output no formato indicado.
-    pass
+
