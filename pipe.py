@@ -128,7 +128,7 @@ class Board:
         adj_positions = self.adjacent_positions(row, col)
 
 
-        if(adj_positions[0] in [None, 'LH1', 'VD1', 'VC1', 'BC1', 'FC1', 'FE1', 'FD1']):
+        if(adj_positions[0] in {None, 'LH1', 'VD1', 'VC1', 'BC1', 'FC1', 'FE1', 'FD1'}):
             possible_rotations[0] = ''
             
             if(piece[0] == 'V'): 
@@ -137,7 +137,7 @@ class Board:
                 possible_rotations[2] = ''
                 possible_rotations[3] = ''
 
-        elif(adj_positions[0] in ['LV1', 'VE1', 'VB1', 'BB1', 'BE1', 'BD1', 'FB1']):
+        elif(adj_positions[0] in {'LV1', 'VE1', 'VB1', 'BB1', 'BE1', 'BD1', 'FB1'}):
             possible_rotations[1] = ''
 
             if(piece[0] == 'V'):
@@ -147,7 +147,7 @@ class Board:
                 possible_rotations[3] = ''
 
 
-        if(adj_positions[1] in [None, 'LH1', 'VB1', 'VE1', 'BB1', 'FB1', 'FE1', 'FD1']):
+        if(adj_positions[1] in {None, 'LH1', 'VB1', 'VE1', 'BB1', 'FB1', 'FE1', 'FD1'}):
             if (piece[0] == 'L'):
                 possible_rotations[0] = ''
             else:
@@ -159,7 +159,7 @@ class Board:
                 possible_rotations[2] = ''
                 possible_rotations[3] = ''
         
-        elif(adj_positions[1] in ['LV1', 'VD1', 'VC1', 'BC1', 'BE1', 'BD1', 'FC1']):
+        elif(adj_positions[1] in {'LV1', 'VD1', 'VC1', 'BC1', 'BE1', 'BD1', 'FC1'}):
             if(piece[0] == 'L'):
                 possible_rotations[1] = ''
             else:
@@ -172,7 +172,7 @@ class Board:
                 possible_rotations[3] = ''
         
 
-        if(adj_positions[2] in [None, 'LV1', 'VC1', 'VE1', 'BE1', 'FC1', 'FB1', 'FE1']):
+        if(adj_positions[2] in {None, 'LV1', 'VC1', 'VE1', 'BE1', 'FC1', 'FB1', 'FE1'}):
             if(piece[0] == 'L'):
                 possible_rotations[1] = ''
             else:
@@ -184,7 +184,7 @@ class Board:
                 possible_rotations[0] = ''
                 possible_rotations[1] = ''
 
-        elif(adj_positions[2] in ['LH1', 'VD1', 'VB1', 'BC1', 'BB1', 'BD1', 'FD1']):
+        elif(adj_positions[2] in {'LH1', 'VD1', 'VB1', 'BC1', 'BB1', 'BD1', 'FD1'}):
             if(piece[0] == 'L'):
                 possible_rotations[0] = ''
             else:
@@ -196,7 +196,7 @@ class Board:
                 possible_rotations[0] = ''
                 possible_rotations[1] = ''
 
-        if(adj_positions[3] in [None, 'LV1', 'VB1', 'VD1', 'BD1', 'FC1', 'FB1', 'FD1']):
+        if(adj_positions[3] in {None, 'LV1', 'VB1', 'VD1', 'BD1', 'FC1', 'FB1', 'FD1'}):
             if(piece[0] == 'L'):
                 possible_rotations[1] = ''
             else:
@@ -208,7 +208,7 @@ class Board:
                 possible_rotations[0] = ''
                 possible_rotations[1] = ''
 
-        elif(adj_positions[3] in ['LH1', 'VE1', 'VC1', 'BC1', 'BB1', 'BE1', 'FE1']):
+        elif(adj_positions[3] in {'LH1', 'VE1', 'VC1', 'BC1', 'BB1', 'BE1', 'FE1'}):
             if(piece[0] == 'L'):
                 possible_rotations[0] = ''
             else:
