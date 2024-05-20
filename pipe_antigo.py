@@ -227,7 +227,6 @@ class Board:
         for line in self.board_array:
             modified_line = [elem[:2] for elem in line]
             print('\t'.join(map(str, modified_line)))
-        print()
 
     # TODO: outros metodos da classe
 

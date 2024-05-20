@@ -232,6 +232,26 @@ class Board:
 
         return list(filter(None, possible_rotations))
 
+    def solve_recursivly(self, row: int, col: int):
+        rotations = self.calculate_possible_rotations(row, col)
+        num_possibilities = len(rotations)
+        if(num_possibilities == 0):
+            self.is_valid = False
+            return
+        elif(num_possibilities == 1):
+            self.board_array[row][col] = rotations[0] + '1'
+            try:
+                self.remaining_pieces.remove((row, col))
+            except ValueError:
+                pass
+
+            adj_positions = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
+            for adj in adj_positions:
+                r, c = adj
+                if(self.get_value(r, c) != None and self.get_value(r, c)[2] != '1'):
+                    self.solve_recursivly(r, c)
+        return
+
 
     def calculate_initial_state(self):
         self.possible_rotations = []
@@ -242,22 +262,31 @@ class Board:
             self.possible_rotations.append([])
             
             for col in range(self.dim):
-                
-                rotations = self.calculate_possible_rotations(row, col)
-                num_possibilities = len(rotations)
-                
-                if(num_possibilities == 0):
-                    self.is_valid = False
-                    return self
-                elif(num_possibilities == 1):
-                    self.board_array[row][col] = rotations[0] + '1'
-                    adj_positions = [(row-1, col), (row, col-1)]
-                    self.update_adjacent(adj_positions)
-                else:
-                    self.remaining_pieces.append((row, col))
+
+                if(self.board_array[row][col][2] == '0'):    
+                    rotations = self.calculate_possible_rotations(row, col)
+                    num_possibilities = len(rotations)
+
+                    if(num_possibilities == 0):
+                        self.is_valid = False
+                        return self
                     
-                self.total_possibilities += num_possibilities
-                self.possible_rotations[row].append(rotations)
+                    elif(num_possibilities == 1):
+                        self.board_array[row][col] = rotations[0] + '1'
+                        adj_positions = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
+                        for adj in adj_positions:
+                            r, c = adj
+                            if(self.get_value(r, c) != None and self.get_value(r, c)[2] != '1'):
+                                self.solve_recursivly(r, c)
+                        
+                    else:
+                        self.remaining_pieces.append((row, col))
+
+                    self.total_possibilities += num_possibilities
+                    self.possible_rotations[row].append(rotations)
+                else:
+                    self.total_possibilities += 1
+                    self.possible_rotations[row].append(self.get_value(row, col)[:2])                    
 
         return self
 

@@ -410,10 +410,10 @@ greedy_best_first_graph_search = best_first_graph_search
 
 
 # Greedy best-first search is accomplished by specifying f(n) = h(n).
-def greedy_search(problem, h=None):
+def greedy_search(problem, h=None, display=False):
     """f(n) = h(n)"""
     h = memoize(h or problem.h, 'h')
-    return best_first_graph_search(problem, h)
+    return best_first_graph_search(problem, h, display)
 
 def astar_search(problem, h=None, display=False):
     """A* search is best-first graph search with f(n) = g(n)+h(n).
