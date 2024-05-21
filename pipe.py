@@ -98,7 +98,7 @@ class Board:
                 
                 if(new_possibilities == 0):
                     self.is_valid = False
-                    return self
+                    return
                 
                 if(new_possibilities == 1 and old_possibilities != 1):
                     self.remaining_pieces.remove((r, c))
@@ -380,6 +380,8 @@ class PipeMania(Problem):
 if __name__ == "__main__":
     board = Board.parse_instance()
     pipeMania = PipeMania(board)
-    goal = greedy_search(pipeMania)
-    goal.state.board.print_board()
-
+    goal = depth_first_tree_search(pipeMania)
+    if(goal):
+        goal.state.board.print_board()
+    else:
+        print('Error')
