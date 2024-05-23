@@ -85,7 +85,6 @@ class Board:
                 positions.append(pos)
         return positions
         
-
     def update_adjacent(self, adj_positions):
         for pos in adj_positions:
             r, c = pos
@@ -106,7 +105,6 @@ class Board:
                 
                 self.possible_rotations[r][c] = new_rotations
                 self.total_possibilities += (new_possibilities - old_possibilities)
-
 
     def rotate_piece(self, row: int, col: int, rot: str):
         new_board = copy.deepcopy(self)
@@ -232,24 +230,30 @@ class Board:
 
         return list(filter(None, possible_rotations))
 
-    def solve_recursivly(self, row: int, col: int):
-        rotations = self.calculate_possible_rotations(row, col)
-        num_possibilities = len(rotations)
-        if(num_possibilities == 0):
-            self.is_valid = False
-            return
-        elif(num_possibilities == 1):
-            self.board_array[row][col] = rotations[0] + '1'
-            try:
-                self.remaining_pieces.remove((row, col))
-            except ValueError:
-                pass
+    def solve_iteratively(self, pieces):
+        while pieces:
+            row, col = pieces.pop()
+        
+            rotations = self.calculate_possible_rotations(row, col)
+            num_possibilities = len(rotations)
 
-            adj_positions = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
-            for adj in adj_positions:
-                r, c = adj
-                if(self.get_value(r, c) != None and self.get_value(r, c)[2] != '1'):
-                    self.solve_recursivly(r, c)
+            if(num_possibilities == 0):
+                self.is_valid = False
+                return
+            
+            elif(num_possibilities == 1):
+                self.board_array[row][col] = rotations[0] + '1'
+                
+                try:
+                    self.remaining_pieces.remove((row, col))
+                except ValueError:
+                    pass
+
+                adj_positions = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
+                for adj in adj_positions:
+                    r, c = adj
+                    if(self.get_value(r, c) != None and self.get_value(r, c)[2] != '1'):
+                        pieces.append(adj)
         return
 
 
@@ -274,10 +278,12 @@ class Board:
                     elif(num_possibilities == 1):
                         self.board_array[row][col] = rotations[0] + '1'
                         adj_positions = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
+                        adj_pieces = []
                         for adj in adj_positions:
                             r, c = adj
                             if(self.get_value(r, c) != None and self.get_value(r, c)[2] != '1'):
-                                self.solve_recursivly(r, c)
+                                adj_pieces.append(adj)
+                        self.solve_iteratively(adj_pieces)
                         
                     else:
                         self.remaining_pieces.append((row, col))
@@ -287,7 +293,8 @@ class Board:
                 else:
                     self.total_possibilities += 1
                     self.possible_rotations[row].append(self.get_value(row, col)[:2])                    
-
+        self.print_board()
+        print(self.remaining_pieces)
         return self
 
     @staticmethod
@@ -380,7 +387,7 @@ class PipeMania(Problem):
 if __name__ == "__main__":
     board = Board.parse_instance()
     pipeMania = PipeMania(board)
-    goal = depth_first_tree_search(pipeMania)
+    goal = greedy_search(pipeMania)
     if(goal):
         goal.state.board.print_board()
     else:
