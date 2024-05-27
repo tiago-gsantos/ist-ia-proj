@@ -292,9 +292,7 @@ class Board:
                     self.possible_rotations[row].append(rotations)
                 else:
                     self.total_possibilities += 1
-                    self.possible_rotations[row].append(self.get_value(row, col)[:2])                    
-        self.print_board()
-        print(self.remaining_pieces)
+                    self.possible_rotations[row].append(self.get_value(row, col)[:2])
         return self
 
     @staticmethod
